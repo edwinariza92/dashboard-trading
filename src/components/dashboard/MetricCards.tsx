@@ -63,11 +63,11 @@ export default function MetricCards({ trades }: Props) {
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
       {cards.map(c => (
-        <div key={c.label} className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
-          <p className="text-xs text-neutral-500 mb-1">{c.label}</p>
-          <p className={`text-xl font-bold font-mono ${c.color}`}>
+        <div key={c.label} className="bg-neutral-900 rounded-xl p-3 sm:p-4 border border-neutral-800 min-w-0">
+          <p className="text-xs text-neutral-500 mb-1 truncate">{c.label}</p>
+          <p className={`text-base sm:text-xl font-bold font-mono ${c.color} truncate`}>
             {c.prefix}{typeof c.value === 'number' ? (c.value >= 0 ? '+' : '') + c.value.toFixed(2) : c.value}{c.suffix}
           </p>
         </div>

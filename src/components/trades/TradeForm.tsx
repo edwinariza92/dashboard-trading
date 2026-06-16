@@ -144,18 +144,18 @@ export default function TradeForm({ onClose, editTrade }: Props) {
   const labelCls = "block text-sm text-neutral-400 mb-1"
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-neutral-900 rounded-xl border border-neutral-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-5 border-b border-neutral-800">
-          <h3 className="text-lg font-semibold">{editTrade ? 'Edit Trade' : 'New Trade'}</h3>
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-neutral-900 rounded-t-2xl sm:rounded-2xl border border-neutral-800 w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-0 sm:mx-4">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-5 border-b border-neutral-800">
+          <h3 className="text-base sm:text-lg font-semibold">{editTrade ? 'Edit Trade' : 'New Trade'}</h3>
           <button onClick={onClose} className="text-neutral-500 hover:text-white cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4">
           <p className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Trade Details</p>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelCls}>Pair</label>
               <input required placeholder="BTC/USDT" value={form.pair} onChange={e => update('pair', e.target.value)} className={inputCls} />
@@ -213,7 +213,7 @@ export default function TradeForm({ onClose, editTrade }: Props) {
           </div>
 
           <p className="text-xs text-neutral-500 font-medium uppercase tracking-wider pt-2">Behavioral & Notes</p>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelCls}>Emotion at Entry</label>
               <select value={form.emotion} onChange={e => update('emotion', e.target.value)} className={inputCls}>
@@ -226,7 +226,7 @@ export default function TradeForm({ onClose, editTrade }: Props) {
                 {mistakeOptions.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
               </select>
             </div>
-            <div className="flex items-center gap-3 pt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-4 sm:pt-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={form.ruleAdherence} onChange={e => update('ruleAdherence', e.target.checked)}
                   className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 accent-green-500" />

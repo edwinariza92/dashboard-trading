@@ -13,11 +13,11 @@ export default function EquityChart({ trades }: Props) {
   }, [])
 
   return (
-    <div className="h-64">
+    <div className="h-48 sm:h-64">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart data={data} margin={{ left: 0, right: 8, top: 4, bottom: 4 }}>
           <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} width={45} />
           <Tooltip
             contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8, fontSize: 13 }}
             labelStyle={{ color: '#999' }}
