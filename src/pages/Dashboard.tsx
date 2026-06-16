@@ -63,11 +63,9 @@ export default function Dashboard() {
             </div>
           )}
           <MetricCards trades={trades} />
-          <div className="bg-neutral-900 rounded-xl p-3 sm:p-4 border border-neutral-800 overflow-x-auto">
+          <div className="bg-neutral-900 rounded-xl p-3 sm:p-4 border border-neutral-800">
             <h3 className="text-sm font-medium text-neutral-400 mb-3">Equity Curve</h3>
-            <div className="min-w-0">
-              <EquityChart trades={trades} />
-            </div>
+            <EquityChart trades={trades} />
           </div>
         </div>
       )}
