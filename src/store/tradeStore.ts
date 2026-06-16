@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Trade, TradeFormData } from '../types/trade'
+import { seedTrades } from '../data/seedTrades'
 
 interface TradeStore {
   trades: Trade[]
@@ -8,6 +9,8 @@ interface TradeStore {
   updateTrade: (id: string, data: TradeFormData) => void
   deleteTrade: (id: string) => void
   getTrade: (id: string) => Trade | undefined
+  loadExamples: () => void
+  removeExamples: () => void
 }
 
 function calcResult(data: TradeFormData): { result: number; rMultiple: number } {
@@ -49,6 +52,16 @@ export const useTradeStore = create<TradeStore>()(
       },
       getTrade: (id) => {
         return get().trades.find(t => t.id === id)
+      },
+      loadExamples: () => {
+        const existingIds = new Set(get().trades.map(t => t.id))
+        const newExamples = seedTrades.filter(t => !existingIds.has(t.id))
+        if (newExamples.length > 0) {
+          set({ trades: [...newExamples, ...get().trades] })
+        }
+      },
+      removeExamples: () => {
+        set({ trades: get().trades.filter(t => !t.isExample) })
       },
     }),
     { name: 'trading-dashboard-trades' }

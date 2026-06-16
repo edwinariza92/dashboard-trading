@@ -25,6 +25,7 @@ export interface Trade {
   ruleAdherence: boolean
   revengeTrade: boolean
   mistakeType: MistakeType
+  isExample?: boolean
 }
 
 export interface TradeFormData {
