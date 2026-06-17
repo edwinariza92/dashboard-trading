@@ -3,6 +3,10 @@ import { BarChart3, Table2, TrendingUp, Settings as SettingsIcon, Cloud } from '
 import { useAuthStore } from '../../store/authStore'
 import { isSupabaseConfigured } from '../../lib/supabase'
 
+interface Props {
+  onLinkClick?: () => void
+}
+
 const links = [
   { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { to: '/trades', label: 'Trades', icon: Table2 },
@@ -10,7 +14,7 @@ const links = [
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onLinkClick }: Props) {
   const email = useAuthStore(s => s.email)
 
   return (
@@ -26,6 +30,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onLinkClick}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                 isActive
@@ -47,6 +52,7 @@ export default function Sidebar() {
           </div>
         ) : isSupabaseConfigured() ? (
           <NavLink to="/login"
+            onClick={onLinkClick}
             className="flex items-center gap-2 px-3 py-2 text-xs text-neutral-500 hover:text-green-500 transition-colors rounded-lg">
             <Cloud className="w-3 h-3" />
             Sign in to sync

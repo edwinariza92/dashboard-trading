@@ -1,5 +1,6 @@
 import type { Trade } from '../../types/trade'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import useSize from '../../utils/useSize'
 
 interface Props {
   trades: Trade[]
@@ -27,9 +28,12 @@ export default function RMultipleDistribution({ trades }: Props) {
 
   const data = Object.values(buckets)
 
+  const [ref, size] = useSize<HTMLDivElement>()
+
   return (
-    <div style={{ width: '100%', height: 256, minWidth: 0 }}>
-      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+    <div ref={ref} className="w-full min-w-0 h-64 sm:h-72 md:h-80">
+      {size.width > 0 && size.height > 0 ? (
+        <ResponsiveContainer width={size.width} height={size.height} minWidth={0} minHeight={80}>
           <BarChart data={data}>
             <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} allowDecimals={false} />
@@ -37,13 +41,14 @@ export default function RMultipleDistribution({ trades }: Props) {
               contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8, fontSize: 13 }}
               labelStyle={{ color: '#999' }}
             />
-            <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#22c55e">
+            <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {data.map((entry, i) => (
-                <rect key={i} fill={entry.color} />
+                <Cell key={i} fill={entry.color} />
               ))}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+      ) : null}
     </div>
   )
 }

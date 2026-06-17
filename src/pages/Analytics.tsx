@@ -24,7 +24,7 @@ export default function Analytics() {
   })).sort((a, b) => b.pnl - a.pnl)[0]
 
   return (
-    <div>
+    <div className="min-w-0">
       <h2 className="text-2xl font-bold mb-6">Analytics</h2>
 
       {trades.length === 0 ? (
@@ -35,22 +35,22 @@ export default function Analytics() {
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+            <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">Performance Calendar</h3>
               <PerformanceCalendar trades={trades} />
             </div>
 
-            <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+            <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">R-Multiple Distribution</h3>
               <RMultipleDistribution trades={trades} />
             </div>
 
-            <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+            <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">Performance by Setup</h3>
               <SetupPerformance trades={trades} />
             </div>
 
-            <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+            <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">Summary</h3>
               <div className="space-y-3">
                 {[
@@ -73,7 +73,7 @@ export default function Analytics() {
             </div>
           </div>
 
-          <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+          <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
             <h3 className="text-sm font-medium text-neutral-400 mb-3">Behavioral Analytics</h3>
             <BehavioralAnalytics trades={trades} />
           </div>
