@@ -36,7 +36,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {trades.length === 0 ? (
+      {trades.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 sm:py-24 text-neutral-500 px-4">
           <p className="text-base sm:text-lg mb-2">No trades yet</p>
           <p className="text-sm mb-6 text-center">Click "New Trade" to add your first trade</p>
@@ -48,7 +48,9 @@ export default function Dashboard() {
             Load 15 example trades
           </button>
         </div>
-      ) : (
+      )}
+
+      {trades.length > 0 && (
         <div className="space-y-4 sm:space-y-6">
           {hasExamples && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-neutral-800/50 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 border border-neutral-700">
@@ -63,12 +65,13 @@ export default function Dashboard() {
             </div>
           )}
           <MetricCards trades={trades} />
-          <div className="bg-neutral-900 rounded-xl p-3 sm:p-4 border border-neutral-800">
-            <h3 className="text-sm font-medium text-neutral-400 mb-3">Equity Curve</h3>
-            <EquityChart trades={trades} />
-          </div>
         </div>
       )}
+
+      <div className={`bg-neutral-900 rounded-xl p-3 sm:p-4 border ${trades.length === 0 ? 'border-neutral-800/30 opacity-40' : 'border-neutral-800 mt-4 sm:mt-6'}`}>
+        <h3 className="text-sm font-medium text-neutral-400 mb-3">Equity Curve</h3>
+        <EquityChart trades={trades} />
+      </div>
 
       {showForm && <TradeForm onClose={() => setShowForm(false)} />}
     </div>
