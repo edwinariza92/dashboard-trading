@@ -13,9 +13,8 @@ export default function EquityChart({ trades }: Props) {
   }, [])
 
   return (
-    <div style={{ width: '100%', height: '192px', position: 'relative' }}>
-      <div style={{ position: 'absolute', inset: 0 }}>
-        <ResponsiveContainer width="100%" height="100%">
+    <div style={{ width: '100%', height: 192, minWidth: 0 }}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <LineChart data={data} margin={{ left: 0, right: 8, top: 4, bottom: 4 }}>
             <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} width={45} />
@@ -26,7 +25,6 @@ export default function EquityChart({ trades }: Props) {
             <Line type="monotone" dataKey="equity" stroke="#22c55e" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
-      </div>
     </div>
   )
 }

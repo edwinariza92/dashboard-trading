@@ -28,9 +28,8 @@ export default function RMultipleDistribution({ trades }: Props) {
   const data = Object.values(buckets)
 
   return (
-    <div style={{ width: '100%', height: '256px', position: 'relative' }}>
-      <div style={{ position: 'absolute', inset: 0 }}>
-        <ResponsiveContainer width="100%" height="100%">
+    <div style={{ width: '100%', height: 256, minWidth: 0 }}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <BarChart data={data}>
             <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} allowDecimals={false} />
@@ -45,7 +44,6 @@ export default function RMultipleDistribution({ trades }: Props) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-      </div>
     </div>
   )
 }
