@@ -28,22 +28,24 @@ export default function RMultipleDistribution({ trades }: Props) {
   const data = Object.values(buckets)
 
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
-          <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} allowDecimals={false} />
-          <Tooltip
-            contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8, fontSize: 13 }}
-            labelStyle={{ color: '#999' }}
-          />
-          <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#22c55e">
-            {data.map((entry, i) => (
-              <rect key={i} fill={entry.color} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div style={{ width: '100%', height: '256px', position: 'relative' }}>
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} allowDecimals={false} />
+            <Tooltip
+              contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8, fontSize: 13 }}
+              labelStyle={{ color: '#999' }}
+            />
+            <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#22c55e">
+              {data.map((entry, i) => (
+                <rect key={i} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }
