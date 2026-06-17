@@ -42,7 +42,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
             <TrendingUp className="w-6 h-6 text-green-500" />
-            <span className="text-xl font-bold">TradeJournal</span>
+            <span className="text-xl font-bold">Dashboard trading</span>
           </div>
           <p className="text-sm text-neutral-500">Sign in to sync your trades across devices</p>
         </div>
