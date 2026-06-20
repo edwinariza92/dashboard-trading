@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useTradeStore } from '../../store/tradeStore'
 import { X } from 'lucide-react'
 import type { TradeSide, Emotion, MistakeType, Trade } from '../../types/trade'
+import type { GeminiTradeData } from '../../lib/gemini'
+import ScreenshotUploader from './ScreenshotUploader'
 
 interface Props {
   onClose: () => void
@@ -140,6 +142,24 @@ export default function TradeForm({ onClose, editTrade }: Props) {
   const update = (field: keyof FormState, value: string | boolean) =>
     setForm(prev => ({ ...prev, [field]: value }))
 
+  const handleAnalysisComplete = (data: GeminiTradeData) => {
+    setForm(prev => ({
+      ...prev,
+      pair: data.pair || prev.pair,
+      exchange: data.exchange || prev.exchange,
+      side: data.side || prev.side,
+      entryPrice: data.entryPrice !== null ? String(data.entryPrice) : prev.entryPrice,
+      exitPrice: data.exitPrice !== null ? String(data.exitPrice) : prev.exitPrice,
+      entryDate: data.entryDate || prev.entryDate,
+      exitDate: data.exitDate || prev.exitDate,
+      quantity: data.quantity !== null ? String(data.quantity) : prev.quantity,
+      stopLoss: data.stopLoss !== null ? String(data.stopLoss) : prev.stopLoss,
+      takeProfit: data.takeProfit !== null ? String(data.takeProfit) : prev.takeProfit,
+      fees: data.fees !== null ? String(data.fees) : prev.fees,
+      setup: data.setup !== 'other' ? data.setup : prev.setup,
+    }))
+  }
+
   const inputCls = "w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
   const labelCls = "block text-sm text-neutral-400 mb-1"
 
@@ -154,6 +174,10 @@ export default function TradeForm({ onClose, editTrade }: Props) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4">
+          {!editTrade && (
+            <ScreenshotUploader onAnalysisComplete={handleAnalysisComplete} />
+          )}
+
           <p className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Trade Details</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>

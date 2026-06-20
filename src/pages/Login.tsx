@@ -28,9 +28,13 @@ export default function Login() {
       if (data.user) {
         setUser(data.user.id, data.user.email || '')
         navigate('/dashboard')
+      } else if (isSignUp) {
+        setError('Check your email to confirm your account')
+      } else {
+        setError('Invalid credentials')
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
