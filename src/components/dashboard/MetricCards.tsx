@@ -1,10 +1,12 @@
 import type { Trade } from '../../types/trade'
+import { useTradeStore, calcROI } from '../../store/tradeStore'
 
 interface Props {
   trades: Trade[]
 }
 
 export default function MetricCards({ trades }: Props) {
+  const capital = useTradeStore(s => s.capital)
   const total = trades.length
   if (total === 0) return null
 
@@ -49,17 +51,21 @@ export default function MetricCards({ trades }: Props) {
     return max
   })()
 
+  const avgROI = capital > 0
+    ? trades.reduce((s, t) => s + calcROI(t.result, capital), 0) / total
+    : 0
+
   const cards = [
     { label: 'Total P&L', value: totalPnl, prefix: '$', color: totalPnl >= 0 ? 'text-green-500' : 'text-red-500' },
     { label: 'Win Rate', value: winRate, suffix: '%', color: 'text-white' },
     { label: 'Profit Factor', value: profitFactor === Infinity ? '∞' : profitFactor.toFixed(2), color: profitFactor >= 1.5 ? 'text-green-500' : 'text-yellow-500' },
     { label: 'Expectancy', value: expectancy, prefix: '$', color: expectancy >= 0 ? 'text-green-500' : 'text-red-500' },
+    { label: 'Avg ROI', value: avgROI, suffix: '%', color: avgROI >= 0 ? 'text-green-500' : 'text-red-500' },
     { label: 'Max Drawdown', value: maxDrawdown, prefix: '$', color: 'text-red-500' },
     { label: 'Avg Win', value: avgWin, prefix: '$', color: 'text-green-500' },
     { label: 'Avg Loss', value: avgLoss, prefix: '$', color: 'text-red-500' },
     { label: 'Best Streak', value: bestStreak, suffix: ' wins', color: 'text-green-500' },
     { label: 'Worst Streak', value: worstStreak, suffix: ' losses', color: 'text-red-500' },
-    { label: 'Total Trades', value: total, color: 'text-white' },
   ]
 
   return (

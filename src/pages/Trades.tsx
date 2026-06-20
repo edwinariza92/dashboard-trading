@@ -8,6 +8,7 @@ import { Plus, Download } from 'lucide-react'
 export default function Trades() {
   const [showForm, setShowForm] = useState(false)
   const trades = useTradeStore(s => s.trades)
+  const capital = useTradeStore(s => s.capital)
 
   return (
     <div>
@@ -16,7 +17,7 @@ export default function Trades() {
         <div className="flex gap-2">
           {trades.length > 0 && (
             <button
-              onClick={() => exportCsv(trades)}
+              onClick={() => exportCsv(trades, capital)}
               className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
             >
               <Download className="w-4 h-4" />

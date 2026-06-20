@@ -39,8 +39,7 @@ export interface TradeFormData {
   quantity: number
   stopLoss: number
   takeProfit: number
-  fees: number
-  fundingFees: number
+  result: number
   setup: string
   tags: string
   notes: string

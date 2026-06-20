@@ -5,13 +5,17 @@ import { useAuthStore } from '../store/authStore'
 import { signOut, fetchTrades, saveTrade } from '../lib/supabaseService'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { exportCsv } from '../utils/exportCsv'
-import { Cloud, CloudOff, Download, LogOut, Upload, CheckCircle, XCircle } from 'lucide-react'
+import { Cloud, CloudOff, Download, LogOut, Upload, CheckCircle, XCircle, DollarSign } from 'lucide-react'
 
 export default function Settings() {
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<'success' | 'error' | null>(null)
+  const [capitalInput, setCapitalInput] = useState('')
+  const [capitalSaved, setCapitalSaved] = useState(false)
   const navigate = useNavigate()
   const trades = useTradeStore(s => s.trades)
+  const capital = useTradeStore(s => s.capital)
+  const setCapital = useTradeStore(s => s.setCapital)
   const { userId, email, clearUser } = useAuthStore()
   const configured = isSupabaseConfigured()
 
@@ -54,11 +58,48 @@ export default function Settings() {
     navigate('/login')
   }
 
+  const handleSaveCapital = () => {
+    const val = parseFloat(capitalInput)
+    if (!isNaN(val) && val >= 0) {
+      setCapital(val)
+      setCapitalSaved(true)
+      setTimeout(() => setCapitalSaved(false), 2000)
+    }
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Settings</h2>
 
       <div className="space-y-6 max-w-lg">
+        <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800">
+          <h3 className="text-sm font-medium text-neutral-400 mb-3">
+            <DollarSign className="w-4 h-4 inline mr-1" />
+            Account Capital
+          </h3>
+          <p className="text-xs text-neutral-500 mb-3">
+            Set your account capital to calculate ROI on each trade.
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min="0"
+              step="any"
+              placeholder={capital > 0 ? String(capital) : 'e.g. 10000'}
+              value={capitalInput}
+              onChange={e => setCapitalInput(e.target.value)}
+              className="flex-1 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+            />
+            <button onClick={handleSaveCapital}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer">
+              {capitalSaved ? 'Saved!' : 'Save'}
+            </button>
+          </div>
+          {capital > 0 && (
+            <p className="text-xs text-green-500 mt-2">Current capital: ${capital.toLocaleString()}</p>
+          )}
+        </div>
+
         <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800">
           <h3 className="text-sm font-medium text-neutral-400 mb-3">Cloud Sync</h3>
           {configured ? (
@@ -123,7 +164,7 @@ export default function Settings() {
         <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800">
           <h3 className="text-sm font-medium text-neutral-400 mb-3">Data</h3>
           <p className="text-xs text-neutral-500 mb-3">All trades are stored in your browser (localStorage). Use CSV export for backup.</p>
-          <button onClick={() => exportCsv(trades)}
+          <button onClick={() => exportCsv(trades, capital)}
             className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
             <Download className="w-4 h-4" />
             Export all trades as CSV

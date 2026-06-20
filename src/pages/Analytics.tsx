@@ -1,11 +1,13 @@
-import { useTradeStore } from '../store/tradeStore'
+import { useTradeStore, calcROI } from '../store/tradeStore'
 import PerformanceCalendar from '../components/dashboard/PerformanceCalendar'
 import RMultipleDistribution from '../components/dashboard/RMultipleDistribution'
 import SetupPerformance from '../components/dashboard/SetupPerformance'
 import BehavioralAnalytics from '../components/dashboard/BehavioralAnalytics'
+import AIInsights from '../components/dashboard/AIInsights'
 
 export default function Analytics() {
   const trades = useTradeStore(s => s.trades)
+  const capital = useTradeStore(s => s.capital)
 
   const wins = trades.filter(t => t.result > 0)
   const losses = trades.filter(t => t.result < 0)
@@ -16,6 +18,7 @@ export default function Analytics() {
   const totalPnl = trades.reduce((s, t) => s + t.result, 0)
   const expectancy = trades.length > 0 ? totalPnl / trades.length : 0
   const avgR = trades.length > 0 ? trades.reduce((s, t) => s + t.rMultiple, 0) / trades.length : 0
+  const avgROI = capital > 0 ? trades.reduce((s, t) => s + calcROI(t.result, capital), 0) / trades.length : 0
 
   const pairs = [...new Set(trades.map(t => t.pair))]
   const bestPair = pairs.map(p => ({
@@ -59,6 +62,7 @@ export default function Analytics() {
                   { label: 'Profit Factor', value: profitFactor, fmt: 'decimal' },
                   { label: 'Expectancy', value: expectancy, fmt: 'currency' },
                   { label: 'Avg R Multiple', value: avgR, fmt: 'r' },
+                  { label: 'Avg ROI', value: avgROI, fmt: 'percent' },
                   { label: 'Total Trades', value: trades.length, fmt: 'number' },
                   { label: 'Winning Trades', value: wins.length, fmt: 'number' },
                   { label: 'Losing Trades', value: losses.length, fmt: 'number' },
@@ -77,6 +81,8 @@ export default function Analytics() {
             <h3 className="text-sm font-medium text-neutral-400 mb-3">Behavioral Analytics</h3>
             <BehavioralAnalytics trades={trades} />
           </div>
+
+          <AIInsights trades={trades} />
         </div>
       )}
     </div>

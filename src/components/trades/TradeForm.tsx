@@ -21,8 +21,7 @@ interface FormState {
   quantity: string
   stopLoss: string
   takeProfit: string
-  fees: string
-  fundingFees: string
+  result: string
   setup: string
   tags: string
   notes: string
@@ -43,8 +42,7 @@ const defaultForm: FormState = {
   quantity: '',
   stopLoss: '',
   takeProfit: '',
-  fees: '',
-  fundingFees: '',
+  result: '',
   setup: '',
   tags: '',
   notes: '',
@@ -84,8 +82,7 @@ function formToTradeData(form: FormState) {
     quantity: toNum(form.quantity),
     stopLoss: toNum(form.stopLoss),
     takeProfit: toNum(form.takeProfit),
-    fees: toNum(form.fees),
-    fundingFees: toNum(form.fundingFees),
+    result: toNum(form.result),
     setup: form.setup,
     tags: form.tags,
     notes: form.notes,
@@ -108,8 +105,7 @@ function tradeToForm(t: Trade): FormState {
     quantity: String(t.quantity),
     stopLoss: String(t.stopLoss),
     takeProfit: String(t.takeProfit),
-    fees: String(t.fees),
-    fundingFees: String(t.fundingFees),
+    result: String(t.result),
     setup: t.setup,
     tags: t.tags.join(', '),
     notes: t.notes,
@@ -155,7 +151,7 @@ export default function TradeForm({ onClose, editTrade }: Props) {
       quantity: data.quantity !== null ? String(data.quantity) : prev.quantity,
       stopLoss: data.stopLoss !== null ? String(data.stopLoss) : prev.stopLoss,
       takeProfit: data.takeProfit !== null ? String(data.takeProfit) : prev.takeProfit,
-      fees: data.fees !== null ? String(data.fees) : prev.fees,
+      result: data.result !== null ? String(data.result) : prev.result,
       setup: data.setup !== 'other' ? data.setup : prev.setup,
     }))
   }
@@ -231,8 +227,8 @@ export default function TradeForm({ onClose, editTrade }: Props) {
               <input type="number" step="any" min="0" placeholder="e.g. 67000" value={form.takeProfit} onChange={e => update('takeProfit', e.target.value)} className={inputCls} />
             </div>
             <div>
-              <label className={labelCls}>Fees</label>
-              <input type="number" step="any" min="0" value={form.fees} onChange={e => update('fees', e.target.value)} placeholder="0" className={inputCls} />
+              <label className={labelCls}>Result <span className="text-neutral-600">($ P&L)</span></label>
+              <input type="number" required step="any" placeholder="+150.50 or -50" value={form.result} onChange={e => update('result', e.target.value)} className={inputCls} />
             </div>
           </div>
 
