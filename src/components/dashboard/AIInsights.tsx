@@ -68,7 +68,7 @@ export default function AIInsights({ trades }: Props) {
       const s = t.setup || 'Other'
       if (!roiBySetup[s]) roiBySetup[s] = { count: 0, totalRoi: 0 }
       roiBySetup[s].count++
-      roiBySetup[s].totalRoi += t.roi
+      roiBySetup[s].totalRoi += (t.roi ?? 0)
     }
 
     // ROI por emoción
@@ -77,7 +77,7 @@ export default function AIInsights({ trades }: Props) {
       const e = t.emotion || 'neutral'
       if (!roiByEmotion[e]) roiByEmotion[e] = { count: 0, totalRoi: 0 }
       roiByEmotion[e].count++
-      roiByEmotion[e].totalRoi += t.roi
+      roiByEmotion[e].totalRoi += (t.roi ?? 0)
     }
 
     // ROI Trend: últimos 10 trades vs anteriores
@@ -85,10 +85,10 @@ export default function AIInsights({ trades }: Props) {
     const recentTrades = sortedTrades.slice(-10)
     const previousTrades = sortedTrades.slice(0, -10)
     const recentAvgRoi = recentTrades.length > 0
-      ? recentTrades.reduce((s, t) => s + t.roi, 0) / recentTrades.length
+      ? recentTrades.reduce((s, t) => s + (t.roi ?? 0), 0) / recentTrades.length
       : 0
     const previousAvgRoi = previousTrades.length > 0
-      ? previousTrades.reduce((s, t) => s + t.roi, 0) / previousTrades.length
+      ? previousTrades.reduce((s, t) => s + (t.roi ?? 0), 0) / previousTrades.length
       : 0
 
     const summary = {
@@ -100,7 +100,7 @@ export default function AIInsights({ trades }: Props) {
       profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
       expectancy: trades.length > 0 ? trades.reduce((s, t) => s + t.result, 0) / trades.length : 0,
       avgRMultiple: trades.length > 0 ? trades.reduce((s, t) => s + t.rMultiple, 0) / trades.length : 0,
-      avgROI: trades.length > 0 ? trades.reduce((s, t) => s + t.roi, 0) / trades.length : 0,
+      avgROI: trades.length > 0 ? trades.reduce((s, t) => s + (t.roi ?? 0), 0) / trades.length : 0,
       maxDrawdown,
       bestSetup: setupEntries[0]?.[0] || '-',
       worstSetup: setupEntries[setupEntries.length - 1]?.[0] || '-',

@@ -17,7 +17,7 @@ export default function Analytics() {
   const totalPnl = trades.reduce((s, t) => s + t.result, 0)
   const expectancy = trades.length > 0 ? totalPnl / trades.length : 0
   const avgR = trades.length > 0 ? trades.reduce((s, t) => s + t.rMultiple, 0) / trades.length : 0
-  const avgROI = trades.length > 0 ? trades.reduce((s, t) => s + t.roi, 0) / trades.length : 0
+  const avgROI = trades.length > 0 ? trades.reduce((s, t) => s + (t.roi ?? 0), 0) / trades.length : 0
 
   const pairs = [...new Set(trades.map(t => t.pair))]
   const bestPair = pairs.map(p => ({

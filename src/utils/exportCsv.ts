@@ -9,7 +9,7 @@ export function exportCsv(trades: Trade[]) {
   const rows = trades.map(t => [
     t.id, t.pair, t.exchange, t.side, t.entryDate, t.exitDate,
     t.entryPrice, t.exitPrice, t.quantity, t.stopLoss, t.takeProfit,
-    t.result, t.rMultiple, t.roi.toFixed(2),
+    t.result, t.rMultiple, (t.roi ?? 0).toFixed(2),
     t.setup, t.tags.join(';'), `"${t.notes.replace(/"/g, '""')}"`,
   ].join(','))
 

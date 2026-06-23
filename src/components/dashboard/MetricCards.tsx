@@ -49,7 +49,7 @@ export default function MetricCards({ trades }: Props) {
     return max
   })()
 
-  const avgROI = trades.reduce((s, t) => s + t.roi, 0) / total
+  const avgROI = trades.reduce((s, t) => s + (t.roi ?? 0), 0) / total
 
   const cards = [
     { label: 'Total P&L', value: totalPnl, prefix: '$', color: totalPnl >= 0 ? 'text-green-500' : 'text-red-500' },

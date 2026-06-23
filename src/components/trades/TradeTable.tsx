@@ -28,7 +28,7 @@ export default function TradeTable({ trades }: Props) {
     )
     .sort((a, b) => {
       if (sort.key === 'roi') {
-        return sort.dir === 'asc' ? a.roi - b.roi : b.roi - a.roi
+        return sort.dir === 'asc' ? (a.roi ?? 0) - (b.roi ?? 0) : (b.roi ?? 0) - (a.roi ?? 0)
       }
       const aVal = a[sort.key]
       const bVal = b[sort.key]
@@ -86,8 +86,8 @@ export default function TradeTable({ trades }: Props) {
                   <td className={`py-3 px-3 font-mono ${t.rMultiple >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {t.rMultiple.toFixed(2)}R
                   </td>
-                  <td className={`py-3 px-3 font-mono ${t.roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {t.roi >= 0 ? '+' : ''}{t.roi.toFixed(2)}%
+                  <td className={`py-3 px-3 font-mono ${(t.roi ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {(t.roi ?? 0) >= 0 ? '+' : ''}{(t.roi ?? 0).toFixed(2)}%
                   </td>
                   <td className="py-3 px-3">
                     <div className="flex gap-1">
