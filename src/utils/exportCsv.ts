@@ -1,7 +1,6 @@
 import type { Trade } from '../types/trade'
-import { calcROI } from '../store/tradeStore'
 
-export function exportCsv(trades: Trade[], capital: number) {
+export function exportCsv(trades: Trade[]) {
   const headers = [
     'id', 'pair', 'exchange', 'side', 'entryDate', 'exitDate',
     'entryPrice', 'exitPrice', 'quantity', 'stopLoss', 'takeProfit',
@@ -10,7 +9,7 @@ export function exportCsv(trades: Trade[], capital: number) {
   const rows = trades.map(t => [
     t.id, t.pair, t.exchange, t.side, t.entryDate, t.exitDate,
     t.entryPrice, t.exitPrice, t.quantity, t.stopLoss, t.takeProfit,
-    t.result, t.rMultiple, calcROI(t.result, capital).toFixed(2),
+    t.result, t.rMultiple, t.roi.toFixed(2),
     t.setup, t.tags.join(';'), `"${t.notes.replace(/"/g, '""')}"`,
   ].join(','))
 

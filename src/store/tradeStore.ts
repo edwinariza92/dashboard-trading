@@ -2,6 +2,9 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Trade, TradeFormData } from '../types/trade'
 import { seedTrades } from '../data/seedTrades'
+import { saveTrade, deleteTradeFromRemote } from '../lib/supabaseService'
+import { isSupabaseConfigured } from '../lib/supabase'
+import { useAuthStore } from './authStore'
 
 interface TradeStore {
   trades: Trade[]
@@ -27,6 +30,7 @@ function formToTrade(data: TradeFormData, id: string): Trade {
     id,
     tags: data.tags.split(',').map(t => t.trim()).filter(Boolean),
     result: data.result,
+    roi: data.roi,
     rMultiple,
     fees: 0,
     fundingFees: 0,
@@ -45,13 +49,31 @@ export const useTradeStore = create<TradeStore>()(
       addTrade: (data) => {
         const trade = formToTrade(data, crypto.randomUUID())
         set({ trades: [trade, ...get().trades] })
+        // Sync automático con Supabase
+        if (isSupabaseConfigured()) {
+          const userId = useAuthStore.getState().userId
+          if (userId) {
+            saveTrade(trade, userId).catch(console.error)
+          }
+        }
       },
       updateTrade: (id, data) => {
         const trade = formToTrade(data, id)
         set({ trades: get().trades.map(t => t.id === id ? trade : t) })
+        // Sync automático con Supabase
+        if (isSupabaseConfigured()) {
+          const userId = useAuthStore.getState().userId
+          if (userId) {
+            saveTrade(trade, userId).catch(console.error)
+          }
+        }
       },
       deleteTrade: (id) => {
         set({ trades: get().trades.filter(t => t.id !== id) })
+        // Sync automático con Supabase
+        if (isSupabaseConfigured()) {
+          deleteTradeFromRemote(id).catch(console.error)
+        }
       },
       getTrade: (id) => {
         return get().trades.find(t => t.id === id)

@@ -20,6 +20,7 @@ export interface Trade {
   tags: string[]
   notes: string
   result: number
+  roi: number
   rMultiple: number
   emotion: Emotion
   ruleAdherence: boolean
@@ -40,6 +41,7 @@ export interface TradeFormData {
   stopLoss: number
   takeProfit: number
   result: number
+  roi: number
   setup: string
   tags: string
   notes: string

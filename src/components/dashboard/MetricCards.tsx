@@ -1,12 +1,10 @@
 import type { Trade } from '../../types/trade'
-import { useTradeStore, calcROI } from '../../store/tradeStore'
 
 interface Props {
   trades: Trade[]
 }
 
 export default function MetricCards({ trades }: Props) {
-  const capital = useTradeStore(s => s.capital)
   const total = trades.length
   if (total === 0) return null
 
@@ -51,9 +49,7 @@ export default function MetricCards({ trades }: Props) {
     return max
   })()
 
-  const avgROI = capital > 0
-    ? trades.reduce((s, t) => s + calcROI(t.result, capital), 0) / total
-    : 0
+  const avgROI = trades.reduce((s, t) => s + t.roi, 0) / total
 
   const cards = [
     { label: 'Total P&L', value: totalPnl, prefix: '$', color: totalPnl >= 0 ? 'text-green-500' : 'text-red-500' },

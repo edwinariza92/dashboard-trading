@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Trade } from '../../types/trade'
-import { useTradeStore, calcROI } from '../../store/tradeStore'
+import { useTradeStore } from '../../store/tradeStore'
 import TradeForm from './TradeForm'
 import { Trash2, Pencil, ArrowUpDown } from 'lucide-react'
 
@@ -15,7 +15,6 @@ export default function TradeTable({ trades }: Props) {
   const [filter, setFilter] = useState('')
   const [editingTrade, setEditingTrade] = useState<Trade | null>(null)
   const deleteTrade = useTradeStore(s => s.deleteTrade)
-  const capital = useTradeStore(s => s.capital)
 
   const toggleSort = (key: SortKey) => {
     setSort(prev => prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' })
@@ -29,9 +28,7 @@ export default function TradeTable({ trades }: Props) {
     )
     .sort((a, b) => {
       if (sort.key === 'roi') {
-        const aRoi = calcROI(a.result, capital)
-        const bRoi = calcROI(b.result, capital)
-        return sort.dir === 'asc' ? aRoi - bRoi : bRoi - aRoi
+        return sort.dir === 'asc' ? a.roi - b.roi : b.roi - a.roi
       }
       const aVal = a[sort.key]
       const bVal = b[sort.key]
@@ -73,7 +70,6 @@ export default function TradeTable({ trades }: Props) {
           </thead>
           <tbody>
             {filtered.map(t => {
-              const roi = calcROI(t.result, capital)
               return (
                 <tr key={t.id} className="border-b border-neutral-800/50 hover:bg-neutral-800/30">
                   <td className="py-3 px-3">{fmtDate(t.entryDate)}</td>
@@ -90,8 +86,8 @@ export default function TradeTable({ trades }: Props) {
                   <td className={`py-3 px-3 font-mono ${t.rMultiple >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {t.rMultiple.toFixed(2)}R
                   </td>
-                  <td className={`py-3 px-3 font-mono ${roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {roi >= 0 ? '+' : ''}{roi.toFixed(2)}%
+                  <td className={`py-3 px-3 font-mono ${t.roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {t.roi >= 0 ? '+' : ''}{t.roi.toFixed(2)}%
                   </td>
                   <td className="py-3 px-3">
                     <div className="flex gap-1">

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTradeStore } from '../store/tradeStore'
 import { useAuthStore } from '../store/authStore'
-import { signOut, fetchTrades, saveTrade } from '../lib/supabaseService'
+import { signOut, fetchTrades, saveTrade, saveCapital, fetchCapital } from '../lib/supabaseService'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { exportCsv } from '../utils/exportCsv'
 import { Cloud, CloudOff, Download, LogOut, Upload, CheckCircle, XCircle, DollarSign } from 'lucide-react'
@@ -44,6 +44,11 @@ export default function Settings() {
       if (remote.length > 0) {
         useTradeStore.setState({ trades: remote })
       }
+      // Fetch capital from cloud
+      const remoteCapital = await fetchCapital(userId)
+      if (remoteCapital !== null && remoteCapital !== capital) {
+        setCapital(remoteCapital)
+      }
       setSyncResult('success')
     } catch {
       setSyncResult('error')
@@ -58,11 +63,19 @@ export default function Settings() {
     navigate('/login')
   }
 
-  const handleSaveCapital = () => {
+  const handleSaveCapital = async () => {
     const val = parseFloat(capitalInput)
     if (!isNaN(val) && val >= 0) {
       setCapital(val)
       setCapitalSaved(true)
+      // Sync capital to Supabase if configured and user is logged in
+      if (isSupabaseConfigured() && userId) {
+        try {
+          await saveCapital(val, userId)
+        } catch (err) {
+          console.error('Failed to save capital to cloud:', err)
+        }
+      }
       setTimeout(() => setCapitalSaved(false), 2000)
     }
   }
@@ -164,7 +177,7 @@ export default function Settings() {
         <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800">
           <h3 className="text-sm font-medium text-neutral-400 mb-3">Data</h3>
           <p className="text-xs text-neutral-500 mb-3">All trades are stored in your browser (localStorage). Use CSV export for backup.</p>
-          <button onClick={() => exportCsv(trades, capital)}
+          <button onClick={() => exportCsv(trades)}
             className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
             <Download className="w-4 h-4" />
             Export all trades as CSV
@@ -194,6 +207,7 @@ export default function Settings() {
   tags text[] default '{}',
   notes text default '',
   result numeric not null,
+  roi numeric default 0,
   r_multiple numeric default 0,
   emotion text default 'neutral',
   rule_adherence boolean default true,
@@ -201,10 +215,21 @@ export default function Settings() {
   mistake_type text default ''
 );
 
+create table user_settings (
+  user_id uuid primary key references auth.users,
+  capital numeric default 0
+);
+
 alter table trades enable row level security;
+alter table user_settings enable row level security;
 
 create policy "Users can manage own trades"
   on trades for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Users can manage own settings"
+  on user_settings for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);`}
           </pre>

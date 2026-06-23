@@ -1,4 +1,4 @@
-import { useTradeStore, calcROI } from '../store/tradeStore'
+import { useTradeStore } from '../store/tradeStore'
 import PerformanceCalendar from '../components/dashboard/PerformanceCalendar'
 import RMultipleDistribution from '../components/dashboard/RMultipleDistribution'
 import SetupPerformance from '../components/dashboard/SetupPerformance'
@@ -7,7 +7,6 @@ import AIInsights from '../components/dashboard/AIInsights'
 
 export default function Analytics() {
   const trades = useTradeStore(s => s.trades)
-  const capital = useTradeStore(s => s.capital)
 
   const wins = trades.filter(t => t.result > 0)
   const losses = trades.filter(t => t.result < 0)
@@ -18,7 +17,7 @@ export default function Analytics() {
   const totalPnl = trades.reduce((s, t) => s + t.result, 0)
   const expectancy = trades.length > 0 ? totalPnl / trades.length : 0
   const avgR = trades.length > 0 ? trades.reduce((s, t) => s + t.rMultiple, 0) / trades.length : 0
-  const avgROI = capital > 0 ? trades.reduce((s, t) => s + calcROI(t.result, capital), 0) / trades.length : 0
+  const avgROI = trades.length > 0 ? trades.reduce((s, t) => s + t.roi, 0) / trades.length : 0
 
   const pairs = [...new Set(trades.map(t => t.pair))]
   const bestPair = pairs.map(p => ({

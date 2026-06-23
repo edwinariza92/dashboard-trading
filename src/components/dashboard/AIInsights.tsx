@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import type { Trade } from '../../types/trade'
-import { useTradeStore, calcROI } from '../../store/tradeStore'
 import { analyzePerformance } from '../../lib/gemini'
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
 
@@ -9,7 +8,6 @@ interface Props {
 }
 
 export default function AIInsights({ trades }: Props) {
-  const capital = useTradeStore(s => s.capital)
   const [analysis, setAnalysis] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -64,6 +62,35 @@ export default function AIInsights({ trades }: Props) {
     const followedPlan = trades.filter(t => t.ruleAdherence)
     const revengeTrades = trades.filter(t => t.revengeTrade)
 
+    // ROI por setup
+    const roiBySetup: Record<string, { count: number; totalRoi: number }> = {}
+    for (const t of trades) {
+      const s = t.setup || 'Other'
+      if (!roiBySetup[s]) roiBySetup[s] = { count: 0, totalRoi: 0 }
+      roiBySetup[s].count++
+      roiBySetup[s].totalRoi += t.roi
+    }
+
+    // ROI por emoción
+    const roiByEmotion: Record<string, { count: number; totalRoi: number }> = {}
+    for (const t of trades) {
+      const e = t.emotion || 'neutral'
+      if (!roiByEmotion[e]) roiByEmotion[e] = { count: 0, totalRoi: 0 }
+      roiByEmotion[e].count++
+      roiByEmotion[e].totalRoi += t.roi
+    }
+
+    // ROI Trend: últimos 10 trades vs anteriores
+    const sortedTrades = [...trades].reverse()
+    const recentTrades = sortedTrades.slice(-10)
+    const previousTrades = sortedTrades.slice(0, -10)
+    const recentAvgRoi = recentTrades.length > 0
+      ? recentTrades.reduce((s, t) => s + t.roi, 0) / recentTrades.length
+      : 0
+    const previousAvgRoi = previousTrades.length > 0
+      ? previousTrades.reduce((s, t) => s + t.roi, 0) / previousTrades.length
+      : 0
+
     const summary = {
       totalTrades: trades.length,
       wins: wins.length,
@@ -73,7 +100,7 @@ export default function AIInsights({ trades }: Props) {
       profitFactor: grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0,
       expectancy: trades.length > 0 ? trades.reduce((s, t) => s + t.result, 0) / trades.length : 0,
       avgRMultiple: trades.length > 0 ? trades.reduce((s, t) => s + t.rMultiple, 0) / trades.length : 0,
-      avgROI: capital > 0 ? trades.reduce((s, t) => s + calcROI(t.result, capital), 0) / trades.length : 0,
+      avgROI: trades.length > 0 ? trades.reduce((s, t) => s + t.roi, 0) / trades.length : 0,
       maxDrawdown,
       bestSetup: setupEntries[0]?.[0] || '-',
       worstSetup: setupEntries[setupEntries.length - 1]?.[0] || '-',
@@ -97,6 +124,19 @@ export default function AIInsights({ trades }: Props) {
           winRate: data.count > 0 ? (data.wins / data.count) * 100 : 0,
         }])
       ),
+      roiBySetup: Object.fromEntries(
+        Object.entries(roiBySetup).map(([setup, data]) => [setup, {
+          count: data.count,
+          avgRoi: data.count > 0 ? data.totalRoi / data.count : 0,
+        }])
+      ),
+      roiByEmotion: Object.fromEntries(
+        Object.entries(roiByEmotion).map(([emotion, data]) => [emotion, {
+          count: data.count,
+          avgRoi: data.count > 0 ? data.totalRoi / data.count : 0,
+        }])
+      ),
+      roiTrend: { recent: recentAvgRoi, previous: previousAvgRoi },
     }
 
     try {

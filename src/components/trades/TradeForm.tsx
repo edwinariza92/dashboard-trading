@@ -22,6 +22,7 @@ interface FormState {
   stopLoss: string
   takeProfit: string
   result: string
+  roi: string
   setup: string
   tags: string
   notes: string
@@ -43,6 +44,7 @@ const defaultForm: FormState = {
   stopLoss: '',
   takeProfit: '',
   result: '',
+  roi: '',
   setup: '',
   tags: '',
   notes: '',
@@ -83,6 +85,7 @@ function formToTradeData(form: FormState) {
     stopLoss: toNum(form.stopLoss),
     takeProfit: toNum(form.takeProfit),
     result: toNum(form.result),
+    roi: toNum(form.roi),
     setup: form.setup,
     tags: form.tags,
     notes: form.notes,
@@ -106,6 +109,7 @@ function tradeToForm(t: Trade): FormState {
     stopLoss: String(t.stopLoss),
     takeProfit: String(t.takeProfit),
     result: String(t.result),
+    roi: String(t.roi),
     setup: t.setup,
     tags: t.tags.join(', '),
     notes: t.notes,
@@ -152,6 +156,7 @@ export default function TradeForm({ onClose, editTrade }: Props) {
       stopLoss: data.stopLoss !== null ? String(data.stopLoss) : prev.stopLoss,
       takeProfit: data.takeProfit !== null ? String(data.takeProfit) : prev.takeProfit,
       result: data.result !== null ? String(data.result) : prev.result,
+      roi: data.roi !== null ? String(data.roi) : prev.roi,
       setup: data.setup !== 'other' ? data.setup : prev.setup,
     }))
   }
@@ -229,6 +234,10 @@ export default function TradeForm({ onClose, editTrade }: Props) {
             <div>
               <label className={labelCls}>Result <span className="text-neutral-600">($ P&L)</span></label>
               <input type="number" required step="any" placeholder="+150.50 or -50" value={form.result} onChange={e => update('result', e.target.value)} className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>ROI <span className="text-neutral-600">(% from screenshot or manual)</span></label>
+              <input type="number" step="any" placeholder="+5.2 or -2.1" value={form.roi} onChange={e => update('roi', e.target.value)} className={inputCls} />
             </div>
           </div>
 

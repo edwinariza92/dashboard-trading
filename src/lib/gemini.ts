@@ -16,6 +16,7 @@ export interface GeminiTradeData {
   stopLoss: number | null
   takeProfit: number | null
   result: number | null
+  roi: number | null
   setup: string
 }
 
@@ -34,12 +35,14 @@ Respond ONLY with valid JSON, no markdown, no code blocks.
   "stopLoss": number or null,
   "takeProfit": number or null,
   "result": number or null - the P&L or profit/loss in dollars (look for PnL, P&L, profit, loss, result, net profit, unrealized PnL),
+  "roi": number or null - the return on investment percentage (look for ROI, Return %, % gain/loss, Return on Investment). Include sign: positive for profit, negative for loss,
   "setup": "breakout|reversal|scalping|trend_following|range|news|other"
 }
 
 Rules:
 - If a field is not visible or cannot be determined, use null
 - For result/P&L: look for any profit or loss number shown (could be labeled as PnL, P&L, profit, loss, net, result, unrealized). Include the sign: positive for profit, negative for loss
+- For roi: look for percentage values labeled as ROI, Return %, Return on Investment, or % gain/loss. If not visible, use null
 - For side: look at whether the position is green (profit) and the direction indicator
 - For dates: convert any date format to YYYY-MM-DDTHH:MM
 - For setup: infer from chart patterns if visible, otherwise use "other"
@@ -92,6 +95,7 @@ export async function analyzeScreenshot(base64Image: string, mimeType: string): 
     stopLoss: parsed.stopLoss ?? null,
     takeProfit: parsed.takeProfit ?? null,
     result: parsed.result ?? null,
+    roi: parsed.roi ?? null,
     setup: parsed.setup ?? 'other',
   }
 }
@@ -128,6 +132,9 @@ interface TradeSummary {
   commonMistakes: string[]
   emotionPerformance: Record<string, { count: number; pnl: number; winRate: number }>
   setupPerformance: Record<string, { count: number; pnl: number; winRate: number }>
+  roiBySetup: Record<string, { count: number; avgRoi: number }>
+  roiByEmotion: Record<string, { count: number; avgRoi: number }>
+  roiTrend: { recent: number; previous: number }
 }
 
 const ANALYSIS_PROMPT = `You are an expert trading performance analyst. Analyze the following trading performance data and provide:
@@ -138,7 +145,14 @@ const ANALYSIS_PROMPT = `You are an expert trading performance analyst. Analyze 
 
 3. **Areas for Improvement** (bullet points): Specific weaknesses or patterns that need attention.
 
-4. **Actionable Recommendations** (numbered list): Concrete, specific steps the trader should take to improve their performance. Be specific about which setups, emotions, or behaviors to focus on.
+4. **ROI Analysis** (specific section):
+   - ROI by setup type: which strategies generate the best returns
+   - ROI by emotion: how emotional state affects returns
+   - ROI trend: is the trader's ROI improving or declining over time
+   - Compare ROI against win rate (high ROI with low win rate = good risk management)
+   - Specific recommendations to improve ROI
+
+5. **Actionable Recommendations** (numbered list): Concrete, specific steps the trader should take to improve their performance. Be specific about which setups, emotions, or behaviors to focus on.
 
 Trading Performance Data:
 {data}
@@ -174,6 +188,18 @@ Rendimiento por Emoción:
 ${Object.entries(summary.emotionPerformance).map(([emotion, data]) =>
   `- ${emotion}: ${data.count} trades, Win Rate: ${data.winRate.toFixed(1)}%, P&L: $${data.pnl.toFixed(2)}`
 ).join('\n')}
+
+ROI por Setup:
+${Object.entries(summary.roiBySetup).map(([setup, data]) =>
+  `- ${setup}: ${data.count} trades, Avg ROI: ${data.avgRoi.toFixed(2)}%`
+).join('\n')}
+
+ROI por Emoción:
+${Object.entries(summary.roiByEmotion).map(([emotion, data]) =>
+  `- ${emotion}: ${data.count} trades, Avg ROI: ${data.avgRoi.toFixed(2)}%`
+).join('\n')}
+
+Tendencia ROI: Últimos trades ${summary.roiTrend.recent.toFixed(2)}% vs Anteriores ${summary.roiTrend.previous.toFixed(2)}%
 `
 
   let response
