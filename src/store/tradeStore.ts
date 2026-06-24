@@ -6,16 +6,42 @@ import { saveTrade, deleteTradeFromRemote } from '../lib/supabaseService'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { useAuthStore } from './authStore'
 
+export type DateFilter = 'currentMonth' | 'lastMonth' | 'last30' | 'all'
+
 interface TradeStore {
   trades: Trade[]
   capital: number
+  dateFilter: DateFilter
   addTrade: (data: TradeFormData) => void
   updateTrade: (id: string, data: TradeFormData) => void
   deleteTrade: (id: string) => void
   getTrade: (id: string) => Trade | undefined
   setCapital: (capital: number) => void
+  setDateFilter: (filter: DateFilter) => void
   loadExamples: () => void
   removeExamples: () => void
+}
+
+export function filterTradesByDate(trades: Trade[], filter: DateFilter): Trade[] {
+  if (filter === 'all') return trades
+  const now = new Date()
+  const start = new Date()
+  if (filter === 'currentMonth') {
+    start.setFullYear(now.getFullYear(), now.getMonth(), 1)
+    start.setHours(0, 0, 0, 0)
+  } else if (filter === 'lastMonth') {
+    start.setFullYear(now.getFullYear(), now.getMonth() - 1, 1)
+    start.setHours(0, 0, 0, 0)
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+    return trades.filter(t => {
+      const d = new Date(t.exitDate)
+      return d >= start && d <= endOfLastMonth
+    })
+  } else if (filter === 'last30') {
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    return trades.filter(t => new Date(t.exitDate) >= thirtyDaysAgo)
+  }
+  return trades.filter(t => new Date(t.exitDate) >= start)
 }
 
 function calcRMultiple(data: TradeFormData): number {
@@ -46,6 +72,7 @@ export const useTradeStore = create<TradeStore>()(
     (set, get) => ({
       trades: [],
       capital: 0,
+      dateFilter: 'all' as DateFilter,
       addTrade: (data) => {
         const trade = formToTrade(data, crypto.randomUUID())
         set({ trades: [trade, ...get().trades] })
@@ -80,6 +107,9 @@ export const useTradeStore = create<TradeStore>()(
       },
       setCapital: (capital) => {
         set({ capital })
+      },
+      setDateFilter: (dateFilter) => {
+        set({ dateFilter })
       },
       loadExamples: () => {
         const existingIds = new Set(get().trades.map(t => t.id))

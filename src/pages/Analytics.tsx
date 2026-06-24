@@ -1,4 +1,5 @@
-import { useTradeStore } from '../store/tradeStore'
+import { useTradeStore, filterTradesByDate } from '../store/tradeStore'
+import DateFilterBar from '../components/ui/DateFilterBar'
 import PerformanceCalendar from '../components/dashboard/PerformanceCalendar'
 import RMultipleDistribution from '../components/dashboard/RMultipleDistribution'
 import SetupPerformance from '../components/dashboard/SetupPerformance'
@@ -7,49 +8,58 @@ import AIInsights from '../components/dashboard/AIInsights'
 
 export default function Analytics() {
   const trades = useTradeStore(s => s.trades)
+  const dateFilter = useTradeStore(s => s.dateFilter)
+  const filtered = filterTradesByDate(trades, dateFilter)
 
-  const wins = trades.filter(t => t.result > 0)
-  const losses = trades.filter(t => t.result < 0)
-  const winRate = trades.length > 0 ? (wins.length / trades.length) * 100 : 0
+  const wins = filtered.filter(t => t.result > 0)
+  const losses = filtered.filter(t => t.result < 0)
+  const winRate = filtered.length > 0 ? (wins.length / filtered.length) * 100 : 0
   const grossProfit = wins.reduce((s, t) => s + t.result, 0)
   const grossLoss = Math.abs(losses.reduce((s, t) => s + t.result, 0))
   const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? Infinity : 0
-  const totalPnl = trades.reduce((s, t) => s + t.result, 0)
-  const expectancy = trades.length > 0 ? totalPnl / trades.length : 0
-  const avgR = trades.length > 0 ? trades.reduce((s, t) => s + t.rMultiple, 0) / trades.length : 0
-  const avgROI = trades.length > 0 ? trades.reduce((s, t) => s + (t.roi ?? 0), 0) / trades.length : 0
+  const totalPnl = filtered.reduce((s, t) => s + t.result, 0)
+  const expectancy = filtered.length > 0 ? totalPnl / filtered.length : 0
+  const avgR = filtered.length > 0 ? filtered.reduce((s, t) => s + t.rMultiple, 0) / filtered.length : 0
+  const avgROI = filtered.length > 0 ? filtered.reduce((s, t) => s + (t.roi ?? 0), 0) / filtered.length : 0
 
-  const pairs = [...new Set(trades.map(t => t.pair))]
+  const pairs = [...new Set(filtered.map(t => t.pair))]
   const bestPair = pairs.map(p => ({
     pair: p,
-    pnl: trades.filter(t => t.pair === p).reduce((s, t) => s + t.result, 0),
+    pnl: filtered.filter(t => t.pair === p).reduce((s, t) => s + t.result, 0),
   })).sort((a, b) => b.pnl - a.pnl)[0]
 
   return (
     <div className="min-w-0">
-      <h2 className="text-2xl font-bold mb-6">Analytics</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <h2 className="text-2xl font-bold">Analytics</h2>
+        <DateFilterBar />
+      </div>
 
-      {trades.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-neutral-500">
           <p className="text-lg mb-2">No data to analyze</p>
-          <p className="text-sm">Add trades to see analytics</p>
+          <p className="text-sm">
+            {dateFilter !== 'all'
+              ? 'No trades in this period. Try selecting "Todo".'
+              : 'Add trades to see analytics'}
+          </p>
         </div>
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">Performance Calendar</h3>
-              <PerformanceCalendar trades={trades} />
+              <PerformanceCalendar trades={filtered} />
             </div>
 
             <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">R-Multiple Distribution</h3>
-              <RMultipleDistribution trades={trades} />
+              <RMultipleDistribution trades={filtered} />
             </div>
 
             <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
               <h3 className="text-sm font-medium text-neutral-400 mb-3">Performance by Setup</h3>
-              <SetupPerformance trades={trades} />
+              <SetupPerformance trades={filtered} />
             </div>
 
             <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
@@ -62,7 +72,7 @@ export default function Analytics() {
                   { label: 'Expectancy', value: expectancy, fmt: 'currency' },
                   { label: 'Avg R Multiple', value: avgR, fmt: 'r' },
                   { label: 'Avg ROI', value: avgROI, fmt: 'percent' },
-                  { label: 'Total Trades', value: trades.length, fmt: 'number' },
+                  { label: 'Total Trades', value: filtered.length, fmt: 'number' },
                   { label: 'Winning Trades', value: wins.length, fmt: 'number' },
                   { label: 'Losing Trades', value: losses.length, fmt: 'number' },
                   { label: 'Best Pair', value: bestPair ? `${bestPair.pair} (${bestPair.pnl >= 0 ? '+' : ''}${bestPair.pnl.toFixed(0)})` : '-', fmt: 'string' },
@@ -78,10 +88,10 @@ export default function Analytics() {
 
           <div className="min-w-0 bg-neutral-900 rounded-xl p-4 border border-neutral-800">
             <h3 className="text-sm font-medium text-neutral-400 mb-3">Behavioral Analytics</h3>
-            <BehavioralAnalytics trades={trades} />
+            <BehavioralAnalytics trades={filtered} />
           </div>
 
-          <AIInsights trades={trades} />
+          <AIInsights trades={filtered} />
         </div>
       )}
     </div>

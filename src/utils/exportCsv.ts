@@ -1,6 +1,23 @@
 import type { Trade } from '../types/trade'
+import type { DateFilter } from '../store/tradeStore'
 
-export function exportCsv(trades: Trade[]) {
+function getDateFilterLabel(filter: DateFilter): string {
+  switch (filter) {
+    case 'currentMonth': {
+      const now = new Date()
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    }
+    case 'lastMonth': {
+      const now = new Date()
+      const d = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    }
+    case 'last30': return 'ultimos-30-dias'
+    case 'all': return 'todo'
+  }
+}
+
+export function exportCsv(trades: Trade[], dateFilter: DateFilter = 'all') {
   const headers = [
     'id', 'pair', 'exchange', 'side', 'entryDate', 'exitDate',
     'entryPrice', 'exitPrice', 'quantity', 'stopLoss', 'takeProfit',
@@ -18,7 +35,7 @@ export function exportCsv(trades: Trade[]) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `trades-${new Date().toISOString().slice(0, 10)}.csv`
+  a.download = `trades-${getDateFilterLabel(dateFilter)}.csv`
   a.click()
   URL.revokeObjectURL(url)
 }

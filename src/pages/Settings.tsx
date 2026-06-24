@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTradeStore } from '../store/tradeStore'
+import { useTradeStore, filterTradesByDate } from '../store/tradeStore'
 import { useAuthStore } from '../store/authStore'
 import { signOut, fetchTrades, saveTrade, saveCapital, fetchCapital } from '../lib/supabaseService'
 import { isSupabaseConfigured } from '../lib/supabase'
@@ -16,6 +16,8 @@ export default function Settings() {
   const trades = useTradeStore(s => s.trades)
   const capital = useTradeStore(s => s.capital)
   const setCapital = useTradeStore(s => s.setCapital)
+  const dateFilter = useTradeStore(s => s.dateFilter)
+  const filtered = filterTradesByDate(trades, dateFilter)
   const { userId, email, clearUser } = useAuthStore()
   const configured = isSupabaseConfigured()
 
@@ -177,11 +179,18 @@ export default function Settings() {
         <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800">
           <h3 className="text-sm font-medium text-neutral-400 mb-3">Data</h3>
           <p className="text-xs text-neutral-500 mb-3">All trades are stored in your browser (localStorage). Use CSV export for backup.</p>
-          <button onClick={() => exportCsv(trades)}
+          <button onClick={() => exportCsv(filtered, dateFilter)}
             className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
             <Download className="w-4 h-4" />
-            Export all trades as CSV
+            Export trades as CSV
           </button>
+          {dateFilter !== 'all' && (
+            <button onClick={() => exportCsv(trades, 'all')}
+              className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer mt-2">
+              <Download className="w-4 h-4" />
+              Export ALL trades as CSV
+            </button>
+          )}
         </div>
 
         <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800">
