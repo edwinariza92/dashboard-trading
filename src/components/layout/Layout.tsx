@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
+import VexelLogo from '../ui/VexelLogo'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -45,7 +46,10 @@ export default function Layout() {
               <Menu className="w-6 h-6" />
             )}
           </button>
-          <h1 className="text-lg font-bold">TradeJournal</h1>
+          <h1 className="text-lg font-bold flex items-center gap-2">
+            <VexelLogo size={20} />
+            VEXEL
+          </h1>
         </div>
 
         {/* Page Content */}

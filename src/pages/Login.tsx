@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { signIn, signUp } from '../lib/supabaseService'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { useAuthStore } from '../store/authStore'
-import { TrendingUp } from 'lucide-react'
+import VexelLogo from '../components/ui/VexelLogo'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -45,8 +45,8 @@ export default function Login() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <TrendingUp className="w-6 h-6 text-green-500" />
-            <span className="text-xl font-bold">Dashboard trading</span>
+            <VexelLogo size={28} />
+            <span className="text-xl font-bold">VEXEL</span>
           </div>
           <p className="text-sm text-neutral-500">Sign in to sync your trades across devices</p>
         </div>
