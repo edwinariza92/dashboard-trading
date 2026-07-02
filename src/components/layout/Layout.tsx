@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
+import Footer from './Footer'
 import VexelLogo from '../ui/VexelLogo'
 
 export default function Layout() {
@@ -56,6 +57,8 @@ export default function Layout() {
         <div className="flex-1 p-4 sm:p-6 overflow-auto">
           <Outlet />
         </div>
+
+        <Footer />
       </main>
     </div>
   )

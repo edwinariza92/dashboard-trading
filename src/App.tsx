@@ -4,6 +4,7 @@ import Trades from './pages/Trades'
 import Analytics from './pages/Analytics'
 import Login from './pages/Login'
 import Settings from './pages/Settings'
+import Tools from './pages/Tools'
 import Layout from './components/layout/Layout'
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/trades" element={<Trades />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/tools" element={<Tools />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart3, Table2, TrendingUp, Settings as SettingsIcon, Cloud } from 'lucide-react'
+import { BarChart3, Table2, TrendingUp, Settings as SettingsIcon, Cloud, Wrench } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { isSupabaseConfigured } from '../../lib/supabase'
 import VexelLogo from '../ui/VexelLogo'
@@ -12,6 +12,7 @@ const links = [
   { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { to: '/trades', label: 'Trades', icon: Table2 },
   { to: '/analytics', label: 'Analytics', icon: TrendingUp },
+  { to: '/tools', label: 'Tools', icon: Wrench },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
